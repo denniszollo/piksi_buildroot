@@ -1,0 +1,5 @@
+config BR2_PACKAGE_SBP_UDP_BRIDGE
+  bool "sbp_udp_bridge"
+  select BR2_PACKAGE_CZMQ
+  select BR2_PACKAGE_LIBSBP
+  select BR2_PACKAGE_LIBPIKSI
