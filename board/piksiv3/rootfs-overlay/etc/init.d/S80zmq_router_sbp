@@ -5,5 +5,11 @@ cmd="zmq_router -f /etc/zmq_router/sbp_router.yml"
 dir="/"
 user=""
 
-source /etc/init.d/template_process.inc.sh
+grep_results=$(cat /persistent/config.ini | grep "smoothpose_enabled=True")
 
+if [ $? -eq 0 ]
+then
+cmd="zmq_router -f /etc/zmq_router/sbp_router_smoothpose.yml"
+fi
+
+#source /etc/init.d/template_process.inc.sh
