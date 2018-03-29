@@ -21,14 +21,6 @@ ports:
           - { action: REJECT, prefix: [0x55, 0xA9, 0x00] } # File read dir
           - { action: REJECT, prefix: [0x55, 0xAC, 0x00] } # File remove
           - { action: REJECT, prefix: [0x55, 0xAD, 0x00] } # File write
-          - { action: REJECT, prefix: [0x55, 0x09, 0x02] } # MSG_POS_ECEF
-          - { action: REJECT, prefix: [0x55, 0x0A, 0x02] } # MSG_POS_LLH
-          - { action: REJECT, prefix: [0x55, 0x0D  0x02] } # MSG_VEL_ECEF
-          - { action: REJECT, prefix: [0x55, 0x0E  0x02] } # MSG_VEL_NED
-          - { action: REJECT, prefix: [0x55, 0x11  0x02] } # MSG_POS_LLH_COV
-          - { action: REJECT, prefix: [0x55, 0x12  0x02] } # MSG_VEL_NED_COV
-          - { action: REJECT, prefix: [0x55, 0x14  0x02] } # MSG_POS_ECEF_COV
-          - { action: REJECT, prefix: [0x55, 0x15  0x02] } # MSG_VEL_ECEF_COV
           - { action: ACCEPT }
       - dst_port: SBP_PORT_FILEIO_FIRMWARE
         filters:
@@ -45,15 +37,6 @@ ports:
           - { action: ACCEPT, prefix: [0x55, 0x0A, 0x02] } # Publish: SBP MSG_POS_LLH
           - { action: ACCEPT, prefix: [0x55, 0xFF, 0xFF] } # Publish: SBP MSG_HEARTBEAT
           - { action: REJECT }
-      - dst_port: SBP_PORT_NAV_DAEMON # This list will need to send only what Smoothpose needs eventually. For now doeverything
-        filters:
-          - { action: REJECT, prefix: [0x55, 0xAE, 0x00] } # Settings register
-          - { action: REJECT, prefix: [0x55, 0xA8, 0x00] } # File read
-          - { action: REJECT, prefix: [0x55, 0xA9, 0x00] } # File read dir
-          - { action: REJECT, prefix: [0x55, 0xAC, 0x00] } # File remove
-          - { action: REJECT, prefix: [0x55, 0xAD, 0x00] } # File write
-          - { action: ACCEPT }
-
 
   - name: SBP_PORT_SETTINGS_DAEMON
     pub_addr: "@tcp://127.0.0.1:43020"
@@ -156,15 +139,3 @@ ports:
           - { action: ACCEPT, prefix: [0x55, 0x84, 0x00] } # SBP_MSG_EPHEMERIS_SBAS
           - { action: ACCEPT, prefix: [0x55, 0x75, 0x00] } # SBP_MSG_GLO_BIASES
           - { action: REJECT }
-  - name: SBP_PORT_NAV_DAEMON
-    pub_addr: "@tcp://127.0.0.1:43090"
-    sub_addr: "@tcp://127.0.0.1:43091"
-    forwarding_rules:
-      - dst_port: SBP_PORT_EXTERNAL
-        filters:
-          - { action: REJECT, prefix: [0x55, 0xAE, 0x00] }   # Settings register
-          - { action: REJECT, prefix: [0x55, 0xA8, 0x00] }   # File read
-          - { action: REJECT, prefix: [0x55, 0xA9, 0x00] }   # File read dir
-          - { action: REJECT, prefix: [0x55, 0xAC, 0x00] }   # File remove
-          - { action: REJECT, prefix: [0x55, 0xAD, 0x00] }   # File write
-          - { action: ACCEPT }
