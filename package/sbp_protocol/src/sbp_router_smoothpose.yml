@@ -12,7 +12,7 @@ ports:
           - { action: REJECT }
       - dst_port: SBP_PORT_SETTINGS_CLIENT
         filters:
-          - { action: ACCEPT, prefix: [0x55, 0xA5, 0x00] } # Settings read response
+          - { action: ACCEPT, prefix: [0x55, 0xAF, 0x00] } # Settings write response
           - { action: REJECT }
       - dst_port: SBP_PORT_EXTERNAL
         filters:
@@ -45,15 +45,13 @@ ports:
           - { action: ACCEPT, prefix: [0x55, 0x0A, 0x02] } # Publish: SBP MSG_POS_LLH
           - { action: ACCEPT, prefix: [0x55, 0xFF, 0xFF] } # Publish: SBP MSG_HEARTBEAT
           - { action: REJECT }
-      - dst_port: SBP_PORT_NAV_DAEMON # This list will need to send only what Smoothpose needs eventually. For now doeverything
+      - dst_port: SBP_PORT_NAV_DAEMON # This list sends only what Smoothpose needs at present.
         filters:
-          - { action: REJECT, prefix: [0x55, 0xAE, 0x00] } # Settings register
-          - { action: REJECT, prefix: [0x55, 0xA8, 0x00] } # File read
-          - { action: REJECT, prefix: [0x55, 0xA9, 0x00] } # File read dir
-          - { action: REJECT, prefix: [0x55, 0xAC, 0x00] } # File remove
-          - { action: REJECT, prefix: [0x55, 0xAD, 0x00] } # File write
-          - { action: ACCEPT }
-
+          - { action: ACCEPT, prefix: [0x55, 0x0A, 0x02] } # MSG_POS_LLH
+          - { action: ACCEPT, prefix: [0x55, 0x0E  0x02] } # MSG_VEL_NED
+          - { action: ACCEPT, prefix: [0x55, 0x00  0x09] } # MSG_IMU_RAW
+          - { action: ACCEPT, prefix: [0x55, 0x01  0x09] } # MSG_IMU_AUX
+          - { action: REJECT }
 
   - name: SBP_PORT_SETTINGS_DAEMON
     pub_addr: "@tcp://127.0.0.1:43020"
@@ -132,14 +130,14 @@ ports:
     forwarding_rules:
       - dst_port: SBP_PORT_EXTERNAL
         filters:
-          - { action: ACCEPT, prefix: [0x55, 0xA5, 0x00] } # Settings read response
+          - { action: ACCEPT, prefix: [0x55, 0xAF, 0x00] } # Settings write response
           - { action: REJECT }
       - dst_port: SBP_PORT_SETTINGS_DAEMON
         filters:
           - { action: ACCEPT }
       - dst_port: SBP_PORT_SETTINGS_CLIENT
         filters:
-          - { action: ACCEPT, prefix: [0x55, 0xA5, 0x00] } # Settings read response
+          - { action: ACCEPT, prefix: [0x55, 0xAF, 0x00] } # Settings write response
           - { action: REJECT }
 
   - name: SBP_PORT_SKYLARK
@@ -156,6 +154,7 @@ ports:
           - { action: ACCEPT, prefix: [0x55, 0x84, 0x00] } # SBP_MSG_EPHEMERIS_SBAS
           - { action: ACCEPT, prefix: [0x55, 0x75, 0x00] } # SBP_MSG_GLO_BIASES
           - { action: REJECT }
+
   - name: SBP_PORT_NAV_DAEMON
     pub_addr: "@tcp://127.0.0.1:43090"
     sub_addr: "@tcp://127.0.0.1:43091"
