@@ -23,7 +23,6 @@
 #include <netdb.h>
 
 #include <czmq.h>
-#define DEBUG 1
 #include <libpiksi/logging.h>
 #include <libpiksi/sbp_zmq_pubsub.h>
 #include <libpiksi/sbp_zmq_rx.h>
@@ -41,6 +40,8 @@
 
 #define SBP_SUB_ENDPOINT    ">tcp://127.0.0.1:43090"  /* SBP External Out */
 #define SBP_PUB_ENDPOINT    ">tcp://127.0.0.1:43091"  /* SBP External In */
+
+#define DEBUG 0
 
 static void usage(char *command)
 {
@@ -93,12 +94,12 @@ static void pos_llh_callback(u16 sender_id, u8 len, u8 msg[], void *context)
 
     sbp_log(LOG_DEBUG, "SBP_MSG_POS_LLH: lat = %f lon = %f height = %f",
               pos->lat, pos->lon, pos->height);
-
     last_log_msg_time = time(NULL);
     sbp_zmq_tx_send(tx_ctx, SBP_MSG_POS_LLH,
                   sizeof(*pos), (u8*) pos);
   }
 }
+
 
 static void pos_ecef_callback(u16 sender_id, u8 len, u8 msg[], void *context)
 {
@@ -159,7 +160,7 @@ static void vel_ecef_callback(u16 sender_id, u8 len, u8 msg[], void *context)
 static int notify_settings_changed(void *context)
 {
   (void)context;
-
+  log_warn("Enabling or Disabling Smoothpose requires device restart");
 
   return 0;
 }
@@ -232,10 +233,10 @@ int main(int argc, char *argv[])
     goto cleanup;
   }
 
-//  settings_register(settings_ctx, "sample_daemon", "enable_broadcast",
-//                    &enable_broadcast, sizeof(enable_broadcast),
- //                   SETTINGS_TYPE_BOOL,
-  //                  notify_settings_changed, NULL);
+  settings_register(settings_ctx, "ins", "smoothpose_enable",
+                    &enable_broadcast, sizeof(enable_broadcast),
+                    SETTINGS_TYPE_BOOL,
+                    notify_settings_changed, NULL);
 
 
 
