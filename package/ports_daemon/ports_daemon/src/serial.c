@@ -75,7 +75,7 @@ static uart_t usb0 = {
   .flow_control = FLOW_CONTROL_NONE
 };
 
-static uart_t usb2 = {
+static uart_t usb1 = {
   .tty_path = "/dev/ttyGS1",
   .baudrate = BAUDRATE_9600,
   .flow_control = FLOW_CONTROL_NONE
@@ -139,12 +139,27 @@ static int flow_control_notify(void *context)
 
 int serial_init(settings_ctx_t *settings_ctx)
 {
-  realpath(usb0.tty_path, usb0.tty_path);
-  realpath(usb2.tty_path, usb2.tty_path);
+  char new_path[MAX_PATH];
+
+  /* resolve path to USB0 */
+  char* rp = realpath(usb0.tty_path, new_path);
+  if (rp == NULL) {
+       piksi_log(LOG_ERR, "realpath returned error in serial_init for usb0: %s\n", strerror(errno));
+       return -1;
+  }
+  strncpy(usb0.tty_path, new_path, MAX_PATH);
+
+  /* resolve path to USB1 */
+  rp = realpath(usb1.tty_path, new_path);
+  if (rp == NULL) {
+       piksi_log(LOG_ERR, "realpath returned error in serial_init for usb1: %s\n", strerror(errno));
+       return -1;
+  }
+  strncpy(usb1.tty_path, new_path, MAX_PATH);
 
   /* Configure USB0 and USB2 */
   uart_configure(&usb0);
-  uart_configure(&usb2);
+  uart_configure(&usb1);
 
   /* Register settings */
   settings_type_t settings_type_baudrate;
