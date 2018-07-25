@@ -146,7 +146,7 @@ static port_config_t port_configs[] = {
   },
   {
     .name = "usb0",
-    .opts = "--name usb0 --file /dev/ttyGS1 --nonblock --outq " USB_SERIAL_XMIT_SIZE,
+    .opts = "--name usb0 --file /dev/ttyGS0 --nonblock --outq " USB_SERIAL_XMIT_SIZE,
     .opts_get = NULL,
     .type = PORT_TYPE_USB,
     .mode_name_default = MODE_NAME_DEFAULT,
