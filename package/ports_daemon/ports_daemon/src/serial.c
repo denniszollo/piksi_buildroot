@@ -70,13 +70,13 @@ static uart_t uart1 = {
 };
 
 static uart_t usb0 = {
-  .tty_path = "/dev/tty.usb0",
+  .tty_path = "/dev/ttyGS0",
   .baudrate = BAUDRATE_9600,
   .flow_control = FLOW_CONTROL_NONE
 };
 
 static uart_t usb2 = {
-  .tty_path = "/dev/tty.usb2",
+  .tty_path = "/dev/ttyGS1",
   .baudrate = BAUDRATE_9600,
   .flow_control = FLOW_CONTROL_NONE
 };
@@ -85,13 +85,13 @@ static int uart_configure(const uart_t *uart)
 {
   int fd = open(uart->tty_path, O_RDONLY | O_NONBLOCK);
   if (fd < 0) {
-    piksi_log(LOG_ERR, "error opening tty device");
+    piksi_log(LOG_ERR, "error opening tty device for path %s", uart->tty_path);
     return -1;
   }
 
   struct termios tio;
   if (tcgetattr(fd, &tio) != 0) {
-    piksi_log(LOG_ERR, "error in tcgetattr()");
+    piksi_log(LOG_ERR, "error in initial tcgetattr() for path %s", uart->tty_path);
     close(fd);
     return -1;
   }
@@ -107,7 +107,7 @@ static int uart_configure(const uart_t *uart)
 
   /* Check results */
   if (tcgetattr(fd, &tio) != 0) {
-    piksi_log(LOG_ERR, "error in tcgetattr()");
+    piksi_log(LOG_ERR, "error in final tcgetattr() for path %s", uart->tty_path);
     close(fd);
     return -1;
   }
@@ -118,7 +118,7 @@ static int uart_configure(const uart_t *uart)
       (cfgetospeed(&tio) != baudrate_val_table[uart->baudrate]) ||
       ((tio.c_cflag & CRTSCTS) ? (uart->flow_control != FLOW_CONTROL_RTS_CTS) :
                                  (uart->flow_control != FLOW_CONTROL_NONE))) {
-    piksi_log(LOG_ERR, "error configuring tty");
+    piksi_log(LOG_ERR, "error configuring tty speed and flow control for path%s", uart->tty_path);
     return -1;
   }
 
