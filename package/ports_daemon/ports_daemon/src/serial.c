@@ -139,7 +139,7 @@ static int flow_control_notify(void *context)
 
 int serial_init(settings_ctx_t *settings_ctx)
 {
-  char new_path[MAX_PATH];
+  char new_path[PATH_MAX];
 
   /* resolve path to USB0 */
   char* rp = realpath(usb0.tty_path, new_path);
@@ -147,7 +147,7 @@ int serial_init(settings_ctx_t *settings_ctx)
        piksi_log(LOG_ERR, "realpath returned error in serial_init for usb0: %s\n", strerror(errno));
        return -1;
   }
-  strncpy(usb0.tty_path, new_path, MAX_PATH);
+  strncpy(usb0.tty_path, new_path, PATH_MAX);
 
   /* resolve path to USB1 */
   rp = realpath(usb1.tty_path, new_path);
@@ -155,7 +155,7 @@ int serial_init(settings_ctx_t *settings_ctx)
        piksi_log(LOG_ERR, "realpath returned error in serial_init for usb1: %s\n", strerror(errno));
        return -1;
   }
-  strncpy(usb1.tty_path, new_path, MAX_PATH);
+  strncpy(usb1.tty_path, new_path, PATH_MAX);
 
   /* Configure USB0 and USB2 */
   uart_configure(&usb0);
